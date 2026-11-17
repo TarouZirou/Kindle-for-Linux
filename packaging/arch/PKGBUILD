@@ -1,0 +1,27 @@
+# Maintainer: TarouZirou
+pkgname=kindle-for-linux-git
+_pkgname=kindle-for-linux
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Unofficial desktop client for Kindle Cloud Reader (GTK4 + WebKitGTK)"
+arch=('any')
+url="https://github.com/TarouZirou/Kindle-for-Linux"
+license=('MIT')
+depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'webkitgtk-6.0'
+         'gst-plugins-base' 'gst-plugins-good')
+makedepends=('git' 'make')
+optdepends=('xdg-desktop-portal: open external links in your default browser')
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+source=("$_pkgname::git+$url.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  printf "0.1.0.r%s.g%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+  cd "$_pkgname"
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+}

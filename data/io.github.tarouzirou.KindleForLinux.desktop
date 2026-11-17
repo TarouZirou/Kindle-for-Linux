@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Kindle for Linux
+GenericName=E-book Reader
+GenericName[ja]=電子書籍リーダー
+Comment=Read your Kindle books (Kindle Cloud Reader client)
+Comment[ja]=Kindle の本を読む (Kindle Cloud Reader クライアント)
+Exec=kindle-for-linux
+Icon=io.github.tarouzirou.KindleForLinux
+Terminal=false
+Categories=Office;Viewer;Literature;
+Keywords=kindle;ebook;book;reader;amazon;電子書籍;
+StartupNotify=true
+StartupWMClass=io.github.tarouzirou.KindleForLinux
