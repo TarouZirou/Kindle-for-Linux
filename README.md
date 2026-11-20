@@ -87,11 +87,31 @@ Xvfb 上の 1200×820 ウィンドウで計測しました。
 
 ## インストール (Arch Linux)
 
+PKGBUILD は 2 種類あります。
+
+| PKGBUILD | パッケージ名 | ビルド元 |
+| --- | --- | --- |
+| `packaging/arch-local/PKGBUILD` | `kindle-for-linux` | 手元に clone したリポジトリの、今チェックアウトしているブランチ（コミット済みの内容） |
+| `packaging/arch/PKGBUILD` | `kindle-for-linux-git` | GitHub のデフォルトブランチの最新版（AUR 向け。`.SRCINFO` 付き） |
+
+手元の clone からビルドする場合（マージ前のブランチでも使えます）:
+
 ```sh
 git clone https://github.com/TarouZirou/Kindle-for-Linux.git
+cd Kindle-for-Linux
+git checkout <読みたいブランチ>         # 例: claude/kindle-arch-linux-viewer-1c3al9
+cd packaging/arch-local
+makepkg -si
+```
+
+GitHub の最新版からビルドする場合:
+
+```sh
 cd Kindle-for-Linux/packaging/arch
 makepkg -si
 ```
+
+どちらも `check()` で Lean のモデルとの差分テストを含むテスト一式を実行してから、パッケージを作ります。
 
 推奨パッケージ: `noto-fonts-cjk`（日本語フォント）、`poppler`（PDF）、`zenity`（ファイル選択ダイアログ）、`xdg-utils`
 

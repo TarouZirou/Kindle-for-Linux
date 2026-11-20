@@ -5,7 +5,7 @@
 #   cd packaging/arch-local && makepkg -si
 # 未コミットの変更は含まれません。
 pkgname=kindle-for-linux
-pkgver=0.2.0
+pkgver=0.2.0.r4.gcd73648
 pkgrel=1
 pkgdesc="Ultra-light e-book / manga reader (Rust, software-rendered GUI, Lean-verified core)"
 arch=('x86_64' 'aarch64')
