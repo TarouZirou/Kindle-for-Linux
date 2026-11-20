@@ -9,3 +9,6 @@ packaging/arch/src/
 packaging/arch/pkg/
 packaging/arch/kindle-for-linux/
 *.pkg.tar.*
+packaging/arch-local/src/
+packaging/arch-local/pkg/
+packaging/arch-local/kindle-for-linux/

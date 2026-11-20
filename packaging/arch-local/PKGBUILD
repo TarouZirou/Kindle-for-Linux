@@ -1,0 +1,60 @@
+# Maintainer: TarouZirou
+#
+# 手元に clone したリポジトリの「今チェックアウトしているブランチ」の
+# コミット済みの内容からビルドします（main へマージしていなくても使えます）。
+#   cd packaging/arch-local && makepkg -si
+# 未コミットの変更は含まれません。
+pkgname=kindle-for-linux
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Ultra-light e-book / manga reader (Rust, software-rendered GUI, Lean-verified core)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/TarouZirou/Kindle-for-Linux"
+license=('MIT')
+depends=('gcc-libs' 'glibc' 'fontconfig' 'libxkbcommon' 'wayland'
+         'libx11' 'libxcursor' 'libxrandr' 'libxi' 'libxkbcommon-x11')
+makedepends=('cargo' 'git')
+optdepends=('noto-fonts-cjk: 日本語の表示（推奨）'
+            'poppler: PDF の表示'
+            'mupdf-tools: PDF の表示（poppler の代わり）'
+            'zenity: 「ファイルを開く」ダイアログ'
+            'kdialog: 「ファイルを開く」ダイアログ (KDE)'
+            'xdg-utils: Kindle Cloud Reader をブラウザで開く')
+provides=("$pkgname" "$pkgname-git")
+conflicts=("$pkgname-git")
+_repo="$(cd "$startdir/../.." && pwd)"
+source=("$pkgname::git+file://$_repo")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$pkgname"
+  local ver
+  ver=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n1)
+  printf "%s.r%s.g%s" "$ver" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "$pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+  cargo test --frozen --release
+}
+
+package() {
+  cd "$pkgname"
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}
