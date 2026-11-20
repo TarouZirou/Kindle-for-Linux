@@ -1,16 +1,22 @@
 # Maintainer: TarouZirou
 pkgname=kindle-for-linux-git
 _pkgname=kindle-for-linux
-pkgver=0.1.0
+pkgver=0.2.0
 pkgrel=1
-pkgdesc="Unofficial desktop client for Kindle Cloud Reader (GTK4 + WebKitGTK)"
-arch=('any')
+pkgdesc="Ultra-light e-book / manga reader (Rust, software-rendered GUI, Lean-verified core)"
+arch=('x86_64' 'aarch64')
 url="https://github.com/TarouZirou/Kindle-for-Linux"
 license=('MIT')
-depends=('python' 'python-gobject' 'gtk4' 'libadwaita' 'webkitgtk-6.0'
-         'gst-plugins-base' 'gst-plugins-good')
-makedepends=('git' 'make')
-optdepends=('xdg-desktop-portal: open external links in your default browser')
+# winit loads X11/Wayland libraries at runtime (dlopen).
+depends=('gcc-libs' 'glibc' 'fontconfig' 'libxkbcommon' 'wayland'
+         'libx11' 'libxcursor' 'libxrandr' 'libxi' 'libxkbcommon-x11')
+makedepends=('cargo' 'git')
+optdepends=('noto-fonts-cjk: 日本語の表示（推奨）'
+            'poppler: PDF の表示'
+            'mupdf-tools: PDF の表示（poppler の代わり）'
+            'zenity: 「ファイルを開く」ダイアログ'
+            'kdialog: 「ファイルを開く」ダイアログ (KDE)'
+            'xdg-utils: Kindle Cloud Reader をブラウザで開く')
 provides=("$_pkgname")
 conflicts=("$_pkgname")
 source=("$_pkgname::git+$url.git")
@@ -18,7 +24,26 @@ sha256sums=('SKIP')
 
 pkgver() {
   cd "$_pkgname"
-  printf "0.1.0.r%s.g%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  printf "0.2.0.r%s.g%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "$_pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$_pkgname"
+  export RUSTUP_TOOLCHAIN=stable CARGO_TARGET_DIR=target
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$_pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  # Includes the replay of every vector produced by the Lean model.
+  cargo test --frozen --release
 }
 
 package() {

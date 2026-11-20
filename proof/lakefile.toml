@@ -1,0 +1,5 @@
+name = "kindlecore"
+defaultTargets = ["KindleCore"]
+
+[[lean_lib]]
+name = "KindleCore"
